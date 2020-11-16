@@ -1,6 +1,6 @@
 # Safe Schema
 
-A dependencies-less solution to **safely** serialize your TypeScript models to and from `ArrayBuffer`s.
+A dependency-less solution to **safely** serialize your TypeScript models to and from `ArrayBuffer`s.
 
 ## Features
 
