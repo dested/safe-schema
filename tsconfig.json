@@ -1,15 +1,16 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "target": "es2019",
+    "lib": [
+      "es2019"
+    ],
+    "module": "commonjs",
+    "esModuleInterop": true,
+
     "declaration": true,
     "moduleResolution": "node",
-    "target": "es2015",
     "declarationMap": true,
-    "lib": [
-      "dom",
-      "es2015",
-      "esnext.asynciterable"
-    ],
     "outDir": "./lib/",
     "sourceMap": true,
     "baseUrl": "./src"
