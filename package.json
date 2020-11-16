@@ -1,0 +1,24 @@
+{
+  "name": "safe-schema",
+  "version": "1.0.0",
+  "author": "Salvatore <dested@gmail.com>",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "publish-cli": "npm publish",
+    "test": "jest",
+    "build": "tsc"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^4.0.5",
+    "prettier": "^2.1.2",
+    "@types/jest": "^22.2.3",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.3.0"
+  }
+}
