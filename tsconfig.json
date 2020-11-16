@@ -1,12 +1,6 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "removeComments": false,
-    "allowUnreachableCode": true,
-    "allowJs": true,
     "declaration": true,
     "moduleResolution": "node",
     "target": "es2015",
@@ -18,12 +12,11 @@
     ],
     "outDir": "./lib/",
     "sourceMap": true,
-    "skipLibCheck": true,
-    "baseUrl": "./src",
-    "jsx": "react"
+    "baseUrl": "./src"
   },
   "exclude": [
     "lib",
+    "__tests__",
     "node_modules"
   ]
 }
