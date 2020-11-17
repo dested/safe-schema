@@ -1,4 +1,5 @@
 import {makeCustom, makeSchema, SchemaDefiner} from '../src';
+
 type CustomTypeMessage = {testId: string};
 
 export const customSchemaTypes = makeCustom<{specialId: string}>({
@@ -16,7 +17,6 @@ export const customSchemaTypes = makeCustom<{specialId: string}>({
   },
 });
 
-// const CustomTypeMessageSchema: SafeSchema<CustomTypeMessage, keyof typeof customSchemaTypes> = {testId: 'specialId'};
 const CustomTypeMessageSchema = makeSchema<CustomTypeMessage, typeof customSchemaTypes>({testId: 'specialId'});
 
 test('custom type test', () => {
