@@ -1,7 +1,7 @@
 import {makeCustom, makeSchema, SchemaDefiner} from '../src';
 type CustomTypeMessage = {testId: string};
 
-export const customSchemaTypes = makeCustom({
+export const customSchemaTypes = makeCustom<{specialId: string}>({
   specialId: {
     read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),
     write: (model, buffer) => {

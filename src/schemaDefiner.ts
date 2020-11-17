@@ -42,7 +42,6 @@ return buff.buildBuffer()
     customSchema: TCustom = {} as any
   ): AdderSizeFunction<T, TCustom> {
     const objectMaps: string[] = [];
-
     let code = this.buildAdderSizeFunction(
       schema as any,
       'value',
@@ -67,7 +66,6 @@ var sum=(items)=>{
 ${objectMaps.join(';\n')}
 return (${code}0);
 }`;
-    // console.log(code);
     // tslint:disable no-eval
     return eval(code);
   }
@@ -240,9 +238,6 @@ ${safeKeysExclude(schema, 'flag')
             assertType<{flag: undefined} & {[key: string]: any}>(schema);
             let result = '';
             for (const key of Object.keys(schema)) {
-              if (key === 'type' || key === 'entityType') {
-                continue;
-              }
               const currentSchemaElement = schema[key];
               result +=
                 this.buildAdderFunction(currentSchemaElement, `${fieldName}["${key}"]`, addMap, customSchema) + '\n';
@@ -297,7 +292,12 @@ ${safeKeysExclude(schema, 'flag')
             return `1+`;
           }
           case 'optional': {
-            return `1+${SchemaDefiner.buildAdderSizeFunction(schema.element, fieldName, addMap, customSchema)}`;
+            return `1+(${fieldName}!==undefined?(${SchemaDefiner.buildAdderSizeFunction(
+              schema.element,
+              fieldName,
+              addMap,
+              customSchema
+            )}0):0)+`;
           }
           case 'array-uint8': {
             const noPeriodsFieldName = fieldName.replace(/\["/g, '_').replace(/"]/g, '');
@@ -336,9 +336,6 @@ ${safeKeysExclude(schema, 'flag')
             assertType<{flag: undefined} & {[key: string]: any}>(schema);
             let result = '';
             for (const key of Object.keys(schema)) {
-              if (key === 'type' || key === 'entityType') {
-                continue;
-              }
               const currentSchemaElement = schema[key];
               result +=
                 this.buildAdderSizeFunction(currentSchemaElement, `${fieldName}["${key}"]`, addMap, customSchema) + '';
@@ -388,9 +385,9 @@ ${safeKeysExclude(schema, 'flag')
               .join(',')}})`;
           }
           case 'number-enum': {
-            return `lookupEnum(reader.readUint8(),{${safeKeysExclude(schema, 'flag')
+            return `parseFloat(lookupEnum(reader.readUint8(),{${safeKeysExclude(schema, 'flag')
               .map((key) => `[${schema[key]}]:'${key}'`)
-              .join(',')}})`;
+              .join(',')}}))`;
           }
           case 'bitmask': {
             return `bitmask(reader.readBits(), {${safeKeysExclude(schema, 'flag')
@@ -436,10 +433,10 @@ ${safeKeysExclude(schema, 'flag')
             if (injectField) {
               str += `${injectField},\n`;
             }
+            if (typeof schema !== 'object') {
+              throw new Error('Buffer error');
+            }
             for (const key of Object.keys(schema)) {
-              if (key === 'type' || key === 'entityType') {
-                continue;
-              }
               const currentSchemaElement = schema[key];
               str += `['${key}'] : ${this.buildReaderFunction(currentSchemaElement, addMap, customSchema)},\n`;
             }
@@ -466,3 +463,5 @@ export function makeCustom<T>(t: CustomSchemaTypes<T>): CustomSchemaTypes<T> {
 export function makeSchema<T, TCustom = never>(t: SafeSchema<T, keyof TCustom>): SafeSchema<T, keyof TCustom> {
   return t;
 }
+
+type DistributeSafeSchema<T, TCustomKeys> = {[key in keyof TCustomKeys]: SafeSchema<T, key>}[keyof TCustomKeys];

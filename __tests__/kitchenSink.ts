@@ -54,7 +54,7 @@ const KitchenSinkMessageSchema: SafeSchema<KitchenSinkMessage> = {
 };
 
 test('kitchen sink test', () => {
-  const generator = SchemaDefiner.generate<KitchenSinkMessage>(KitchenSinkMessageSchema);
+  const generator = SchemaDefiner.generate<KitchenSinkMessage, never>(KitchenSinkMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer(
     {

@@ -49,7 +49,7 @@ declare type OptionalPropertyOf<T> = Exclude<{
 declare type RequiredPropertyOf<T> = Exclude<{
     [K in keyof T]: T extends Record<K, T[K]> ? K : never;
 }[keyof T], undefined>;
-declare type SafeSchemaSimple<T> = T extends string ? 'string' | SafeSchemaEnum<T> : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' : T extends boolean ? 'boolean' : never;
+declare type SafeSchemaSimple<T> = T extends string ? 'string' | SafeSchemaEnum<T> : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' | SafeSchemaNumberEnum<T> : T extends boolean ? 'boolean' : never;
 export declare type SafeSchemaElement<T, TKey extends keyof T, TCustoms = never> = (T[TKey] extends string | boolean | number ? SafeSchemaSimple<T[TKey]> : T[TKey] extends Array<any> ? T[TKey][number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[TKey][number]>> : T[TKey][number] extends {
     type: string;
 } ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[TKey][number], TCustoms>> | SafeSchemaArray<SafeSchemaSimpleObject<T[TKey][number], TCustoms>> : SafeSchemaArray<SafeSchemaSimpleObject<T[TKey][number], TCustoms>> : T[TKey] extends {
@@ -67,8 +67,8 @@ export declare type SafeSchema<T, TCustoms = never> = (T extends string | boolea
 export declare type CustomSchemaTypes<TCustom> = {
     [key in keyof TCustom]: {
         read: (buffer: ArrayBufferReader) => TCustom[key];
-        write: (model: any, buffer: ArrayBufferBuilder) => void;
-        size: (model: any) => number;
+        write: (model: TCustom[key], buffer: ArrayBufferBuilder) => void;
+        size: (model: TCustom[key]) => number;
     };
 };
 export declare type ABFlags = {

@@ -2,9 +2,8 @@
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es2019",
-    "lib": [
-      "es2019"
-    ],
+    "lib": ["es2019", "DOM"],
+
     "module": "commonjs",
     "esModuleInterop": true,
 

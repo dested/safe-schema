@@ -48,7 +48,7 @@ type RequiredPropertyOf<T> = Exclude<
 type SafeSchemaSimple<T> = T extends string
   ? 'string' | SafeSchemaEnum<T>
   : T extends number
-  ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64'
+  ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' | SafeSchemaNumberEnum<T>
   : T extends boolean
   ? 'boolean'
   : never;
@@ -96,8 +96,8 @@ export type SafeSchema<T, TCustoms = never> =
 export type CustomSchemaTypes<TCustom> = {
   [key in keyof TCustom]: {
     read: (buffer: ArrayBufferReader) => TCustom[key];
-    write: (model: any, buffer: ArrayBufferBuilder) => void;
-    size: (model: any) => number;
+    write: (model: TCustom[key], buffer: ArrayBufferBuilder) => void;
+    size: (model: TCustom[key]) => number;
   };
 };
 
