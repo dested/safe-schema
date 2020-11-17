@@ -117,7 +117,7 @@ return (${code}0);
     return eval(code);
   }
 
-  static generate<T, TCustom = never>(
+  static generate<T, TCustom = unknown>(
     schema: SafeSchema<T, keyof TCustom>,
     customSchema?: TCustom
   ): SchemaGenerator<T, TCustom> {
@@ -460,8 +460,6 @@ type ReaderFunction<T, TCustom> = (reader: ArrayBufferReader, customSchemaTypes:
 export function makeCustom<T>(t: CustomSchemaTypes<T>): CustomSchemaTypes<T> {
   return t;
 }
-export function makeSchema<T, TCustom = never>(t: SafeSchema<T, keyof TCustom>): SafeSchema<T, keyof TCustom> {
+export function makeSchema<T, TCustom = unknown>(t: SafeSchema<T, keyof TCustom>): SafeSchema<T, keyof TCustom> {
   return t;
 }
-
-type DistributeSafeSchema<T, TCustomKeys> = {[key in keyof TCustomKeys]: SafeSchema<T, key>}[keyof TCustomKeys];

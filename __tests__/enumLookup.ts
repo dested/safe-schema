@@ -1,14 +1,14 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
 
 type EnumMessage = {switcher: 'a' | 'b' | 'c'};
-const EnumMessageSchema: SafeSchema<EnumMessage> = {
+const EnumMessageSchema = makeSchema<EnumMessage>({
   switcher: {
     flag: 'enum',
     a: 0,
     b: 1,
     c: 2,
   },
-};
+});
 
 test('enum test', () => {
   const generator = SchemaDefiner.generate<EnumMessage>(EnumMessageSchema);

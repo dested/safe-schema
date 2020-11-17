@@ -1,4 +1,4 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
 import {assertType} from '../src/utils';
 
 type Messages =
@@ -11,13 +11,13 @@ type Messages =
       shoes: number;
     };
 
-const MessageSchema: SafeSchema<Messages> = {
+const MessageSchema = makeSchema<Messages>({
   flag: 'type-lookup',
   elements: {
     ping: {value: 'uint8'},
     pong: {shoes: 'float32'},
   },
-};
+});
 
 test('type lookup test', () => {
   const generator = SchemaDefiner.generate<Messages>(MessageSchema);

@@ -1,12 +1,12 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
 
 type UInt8Message = {count?: number};
-const UInt8MessageSchema: SafeSchema<UInt8Message> = {
+const UInt8MessageSchema = makeSchema<UInt8Message>({
   count: {
     flag: 'optional',
     element: 'uint8',
   },
-};
+});
 
 test('uint8 optional test set', () => {
   const generator = SchemaDefiner.generate<UInt8Message>(UInt8MessageSchema);

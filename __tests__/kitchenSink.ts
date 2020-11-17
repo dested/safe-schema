@@ -1,4 +1,4 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
 
 type Weapons = 'sword' | 'laser';
 
@@ -23,7 +23,7 @@ type KitchenSinkMessage = {
   )[];
 };
 
-const KitchenSinkMessageSchema: SafeSchema<KitchenSinkMessage> = {
+const KitchenSinkMessageSchema = makeSchema<KitchenSinkMessage>({
   message: 'string',
   items: {
     flag: 'array-uint8',
@@ -51,10 +51,10 @@ const KitchenSinkMessageSchema: SafeSchema<KitchenSinkMessage> = {
       },
     },
   },
-};
+});
 
 test('kitchen sink test', () => {
-  const generator = SchemaDefiner.generate<KitchenSinkMessage, never>(KitchenSinkMessageSchema);
+  const generator = SchemaDefiner.generate<KitchenSinkMessage>(KitchenSinkMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer(
     {

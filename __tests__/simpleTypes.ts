@@ -1,7 +1,7 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
 
 type UInt8Message = {count: number};
-const UInt8MessageSchema: SafeSchema<UInt8Message> = {count: 'uint8'};
+const UInt8MessageSchema = makeSchema<UInt8Message>({count: 'uint8'});
 
 test('uint8 test', () => {
   const generator = SchemaDefiner.generate<UInt8Message>(UInt8MessageSchema);
@@ -14,7 +14,7 @@ test('uint8 test', () => {
 });
 
 type UInt16Message = {count: number};
-const UInt16MessageSchema: SafeSchema<UInt16Message> = {count: 'uint16'};
+const UInt16MessageSchema = makeSchema<UInt16Message>({count: 'uint16'});
 
 test('uint16 test', () => {
   const generator = SchemaDefiner.generate<UInt16Message>(UInt16MessageSchema);
@@ -27,7 +27,7 @@ test('uint16 test', () => {
 });
 
 type UInt32Message = {count: number};
-const UInt32MessageSchema: SafeSchema<UInt32Message> = {count: 'uint32'};
+const UInt32MessageSchema = makeSchema<UInt32Message>({count: 'uint32'});
 
 test('uint32 test', () => {
   const generator = SchemaDefiner.generate<UInt32Message>(UInt32MessageSchema);
@@ -40,7 +40,7 @@ test('uint32 test', () => {
 });
 
 type Int8Message = {count: number};
-const Int8MessageSchema: SafeSchema<Int8Message> = {count: 'int8'};
+const Int8MessageSchema = makeSchema<Int8Message>({count: 'int8'});
 
 test('int8 test', () => {
   const generator = SchemaDefiner.generate<Int8Message>(Int8MessageSchema);
@@ -53,7 +53,7 @@ test('int8 test', () => {
 });
 
 type Int16Message = {count: number};
-const Int16MessageSchema: SafeSchema<Int16Message> = {count: 'int16'};
+const Int16MessageSchema = makeSchema<Int16Message>({count: 'int16'});
 
 test('int16 test', () => {
   const generator = SchemaDefiner.generate<Int16Message>(Int16MessageSchema);
@@ -66,7 +66,7 @@ test('int16 test', () => {
 });
 
 type Int32Message = {count: number};
-const Int32MessageSchema: SafeSchema<Int32Message> = {count: 'int32'};
+const Int32MessageSchema = makeSchema<Int32Message>({count: 'int32'});
 
 test('int32 test', () => {
   const generator = SchemaDefiner.generate<Int32Message>(Int32MessageSchema);
@@ -79,7 +79,7 @@ test('int32 test', () => {
 });
 
 type Float32Message = {count: number};
-const Float32MessageSchema: SafeSchema<Float32Message> = {count: 'float32'};
+const Float32MessageSchema = makeSchema<Float32Message>({count: 'float32'});
 
 test('float32 test', () => {
   const generator = SchemaDefiner.generate<Float32Message>(Float32MessageSchema);
@@ -92,7 +92,7 @@ test('float32 test', () => {
 });
 
 type Float64Message = {count: number};
-const Float64MessageSchema: SafeSchema<Float64Message> = {count: 'float64'};
+const Float64MessageSchema = makeSchema<Float64Message>({count: 'float64'});
 
 test('float64 test', () => {
   const generator = SchemaDefiner.generate<Float64Message>(Float64MessageSchema);
@@ -105,7 +105,7 @@ test('float64 test', () => {
 });
 
 type BooleanMessage = {count: boolean};
-const BooleanMessageSchema: SafeSchema<BooleanMessage> = {count: 'boolean'};
+const BooleanMessageSchema = makeSchema<BooleanMessage>({count: 'boolean'});
 
 test('boolean test', () => {
   const generator = SchemaDefiner.generate<BooleanMessage>(BooleanMessageSchema);
@@ -118,7 +118,7 @@ test('boolean test', () => {
 });
 
 type StringMessage = {count: string};
-const StringMessageSchema: SafeSchema<StringMessage> = {count: 'string'};
+const StringMessageSchema = makeSchema<StringMessage>({count: 'string'});
 
 test('string test', () => {
   const generator = SchemaDefiner.generate<StringMessage>(StringMessageSchema);
