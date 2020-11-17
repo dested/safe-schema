@@ -3,20 +3,12 @@
   "compilerOptions": {
     "target": "es2019",
     "lib": ["es2019", "DOM"],
-
     "module": "commonjs",
     "esModuleInterop": true,
-
-    "declaration": true,
+    "noEmit": true,
     "moduleResolution": "node",
-    "declarationMap": true,
-    "outDir": "./lib/",
     "sourceMap": true,
     "baseUrl": "./src"
   },
-  "exclude": [
-    "lib",
-    "__tests__",
-    "node_modules"
-  ]
+  "exclude": ["lib", "node_modules"]
 }

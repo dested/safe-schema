@@ -1,14 +1,14 @@
-import {SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SchemaDefiner} from '../src';
 
 type Uint8ArrayMessage = {count: number[]};
-const Uint8ArrayMessageSchema: SafeSchema<Uint8ArrayMessage> = {
+const Uint8ArrayMessageSchema = makeSchema<Uint8ArrayMessage>({
   count: {
     flag: 'array-uint8',
     elements: 'uint32',
   },
-};
+});
 
-test('array unit8 test', async () => {
+test('array unit8 test', () => {
   const generator = SchemaDefiner.generate<Uint8ArrayMessage>(Uint8ArrayMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer({count: [12, 24]}, generator);
@@ -19,14 +19,14 @@ test('array unit8 test', async () => {
 });
 
 type Uint16ArrayMessage = {count: number[]};
-const Uint16ArrayMessageSchema: SafeSchema<Uint16ArrayMessage> = {
+const Uint16ArrayMessageSchema = makeSchema<Uint16ArrayMessage>({
   count: {
     flag: 'array-uint16',
     elements: 'uint32',
   },
-};
+});
 
-test('array unit8 test', async () => {
+test('array unit8 test', () => {
   const generator = SchemaDefiner.generate<Uint16ArrayMessage>(Uint16ArrayMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer({count: [12, 24]}, generator);
@@ -37,7 +37,7 @@ test('array unit8 test', async () => {
 });
 
 type Uint8ArrayObjectMessage = {count: {shoes: boolean; count: number}[]};
-const Uint8ArrayObjectMessageSchema: SafeSchema<Uint8ArrayObjectMessage> = {
+const Uint8ArrayObjectMessageSchema = makeSchema<Uint8ArrayObjectMessage>({
   count: {
     flag: 'array-uint8',
     elements: {
@@ -45,9 +45,9 @@ const Uint8ArrayObjectMessageSchema: SafeSchema<Uint8ArrayObjectMessage> = {
       shoes: 'boolean',
     },
   },
-};
+});
 
-test('array unit8 object test', async () => {
+test('array unit8 object test', () => {
   const generator = SchemaDefiner.generate<Uint8ArrayObjectMessage>(Uint8ArrayObjectMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer(
