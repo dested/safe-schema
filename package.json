@@ -1,6 +1,6 @@
 {
   "name": "safe-schema",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "homepage": "https://github.com/dested/safe-schema",
   "author": "Salvatore <dested@gmail.com>",
   "main": "./lib/index.js",
@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "tsc -w --p ./tsconfig.test.json"
   },
   "dependencies": {
   },

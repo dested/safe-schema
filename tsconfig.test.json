@@ -1,0 +1,14 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es2019",
+    "lib": ["es2019"],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "baseUrl": "./src"
+  },
+  "exclude": ["lib", "node_modules"]
+}

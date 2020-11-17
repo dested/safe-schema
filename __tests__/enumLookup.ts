@@ -10,7 +10,7 @@ const EnumMessageSchema: SafeSchema<EnumMessage> = {
   },
 };
 
-test('enum test', async () => {
+test('enum test', () => {
   const generator = SchemaDefiner.generate<EnumMessage>(EnumMessageSchema);
 
   const buffer = SchemaDefiner.toBuffer({switcher: 'a'}, generator);

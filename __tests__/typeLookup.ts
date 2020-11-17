@@ -19,7 +19,7 @@ const MessageSchema: SafeSchema<Messages> = {
   },
 };
 
-test('type lookup test', async () => {
+test('type lookup test', () => {
   const generator = SchemaDefiner.generate<Messages>(MessageSchema);
 
   const buffer = SchemaDefiner.toBuffer({type: 'pong', shoes: 12}, generator);
