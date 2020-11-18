@@ -23,25 +23,25 @@ export declare type SafeSchemaArray<TElements> = {
 };
 export declare type SafeSchemaTypeLookupElements<TElements extends {
     type: string;
-}, TCustoms = never> = {
+}, TCustom> = {
     elements: {
-        [key in TElements['type']]: SafeSchemaTypeLookup<TElements, key, TCustoms>;
+        [key in TElements['type']]: SafeSchemaTypeLookup<TElements, key, TCustom>;
     };
     flag: 'type-lookup';
 };
 export declare type SafeSchemaTypeLookup<TItem extends {
     type: string;
-}, TKey extends TItem['type'], TCustoms = never> = SafeSchemaSimpleObject<Omit<Discriminate<TItem, 'type', TKey>, 'type'>, TCustoms>;
+}, TKey extends TItem['type'], TCustom> = SafeSchemaSimpleObject<Omit<Discriminate<TItem, 'type', TKey>, 'type'>, TCustom>;
 export declare type SafeSchemaTypeElement<TItem extends {
     type: string;
-}, TCustoms = never> = SafeSchemaSimpleObject<Omit<TItem, 'type'>, TCustoms>;
-export declare type SafeSchemaSimpleObject<TItem, TCustoms = never> = {
+}, TCustom> = SafeSchemaSimpleObject<Omit<TItem, 'type'>, TCustom>;
+export declare type SafeSchemaSimpleObject<TItem, TCustom> = {
     [keyT in OptionalPropertyOf<TItem>]: {
-        element: SafeSchemaElement<Required<TItem>, keyT, TCustoms>;
+        element: SafeSchema<Required<TItem>[keyT], TCustom>;
         flag: 'optional';
-    };
+    } | keyof TCustom;
 } & {
-    [keyT in RequiredPropertyOf<TItem>]: SafeSchemaElement<Required<TItem>, keyT, TCustoms>;
+    [keyT in RequiredPropertyOf<TItem>]: SafeSchema<Required<TItem>[keyT], TCustom> | keyof TCustom;
 };
 declare type OptionalPropertyOf<T> = Exclude<{
     [K in keyof T]: T extends Record<K, T[K]> ? never : K;
@@ -50,20 +50,13 @@ declare type RequiredPropertyOf<T> = Exclude<{
     [K in keyof T]: T extends Record<K, T[K]> ? K : never;
 }[keyof T], undefined>;
 declare type SafeSchemaSimple<T> = T extends string ? 'string' | SafeSchemaEnum<T> : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' | SafeSchemaNumberEnum<T> : T extends boolean ? 'boolean' : never;
-export declare type SafeSchemaElement<T, TKey extends keyof T, TCustoms = never> = (T[TKey] extends string | boolean | number ? SafeSchemaSimple<T[TKey]> : T[TKey] extends Array<any> ? T[TKey][number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[TKey][number]>> : T[TKey][number] extends {
+export declare type SafeSchema<T, TCustom extends {}> = T extends string | boolean | number ? SafeSchemaSimple<T> : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends {
     type: string;
-} ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[TKey][number], TCustoms>> | SafeSchemaArray<SafeSchemaSimpleObject<T[TKey][number], TCustoms>> : SafeSchemaArray<SafeSchemaSimpleObject<T[TKey][number], TCustoms>> : T[TKey] extends {
-    [key in keyof T[TKey]]: boolean;
-} ? SafeSchemaBitmask<T[TKey]> : T[TKey] extends {
-    type: string;
-} ? SafeSchemaTypeLookupElements<T[TKey], TCustoms> | SafeSchemaSimpleObject<T[TKey], TCustoms> : T[TKey] extends {} ? SafeSchemaSimpleObject<T[TKey], TCustoms> : never) | TCustoms;
-export declare type SafeSchema<T, TCustoms = never> = (T extends string | boolean | number ? SafeSchemaSimple<T> : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends {
-    type: string;
-} ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[number], TCustoms>> | SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustoms>> : SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustoms>> : T extends {
+} ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[number], TCustom>> | SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : T extends {
     [key in keyof T]: boolean;
-} ? SafeSchemaBitmask<T> | SafeSchemaSimpleObject<T, TCustoms> : T extends {
+} ? SafeSchemaBitmask<T> | SafeSchemaSimpleObject<T, TCustom> : T extends {} ? T extends {
     type: string;
-} ? SafeSchemaTypeLookupElements<T, TCustoms> | SafeSchemaSimpleObject<T, TCustoms> : T extends {} ? SafeSchemaSimpleObject<T, TCustoms> : never) | TCustoms;
+} ? SafeSchemaTypeLookupElements<T, TCustom> : SafeSchemaSimpleObject<T, TCustom> : never;
 export declare type CustomSchemaTypes<TCustom> = {
     [key in keyof TCustom]: {
         read: (buffer: ArrayBufferReader) => TCustom[key];
