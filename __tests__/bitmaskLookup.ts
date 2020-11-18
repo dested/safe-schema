@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 
 type BitMaskMessage = {
   switcher: {
@@ -19,12 +19,12 @@ const BitMaskMessageSchema = makeSchema<BitMaskMessage>({
 });
 
 test('bitmask test', () => {
-  const generator = SchemaDefiner.generate<BitMaskMessage>(BitMaskMessageSchema);
+  const generator = generateSchema(BitMaskMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({switcher: {left: true, down: false, up: true, right: false}}, generator);
+  const buffer = generator.toBuffer({switcher: {left: true, down: false, up: true, right: false}});
 
   expect(buffer.byteLength).toEqual(1);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.switcher).toEqual({left: true, down: false, up: true, right: false});
 });

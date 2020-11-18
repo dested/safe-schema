@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 
 type Uint8ArrayMessage = {count: number[]};
 const Uint8ArrayMessageSchema = makeSchema<Uint8ArrayMessage>({
@@ -9,12 +9,12 @@ const Uint8ArrayMessageSchema = makeSchema<Uint8ArrayMessage>({
 });
 
 test('array unit8 test', () => {
-  const generator = SchemaDefiner.generate<Uint8ArrayMessage>(Uint8ArrayMessageSchema);
+  const generator = generateSchema(Uint8ArrayMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({count: [12, 24]}, generator);
+  const buffer = generator.toBuffer({count: [12, 24]});
   expect(buffer.byteLength).toEqual(4 * 2 + 1);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.count).toEqual([12, 24]);
 });
 
@@ -27,12 +27,12 @@ const Uint16ArrayMessageSchema = makeSchema<Uint16ArrayMessage>({
 });
 
 test('array unit8 test', () => {
-  const generator = SchemaDefiner.generate<Uint16ArrayMessage>(Uint16ArrayMessageSchema);
+  const generator = generateSchema(Uint16ArrayMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({count: [12, 24]}, generator);
+  const buffer = generator.toBuffer({count: [12, 24]});
   expect(buffer.byteLength).toEqual(4 * 2 + 2);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.count).toEqual([12, 24]);
 });
 
@@ -48,20 +48,17 @@ const Uint8ArrayObjectMessageSchema = makeSchema<Uint8ArrayObjectMessage>({
 });
 
 test('array unit8 object test', () => {
-  const generator = SchemaDefiner.generate<Uint8ArrayObjectMessage>(Uint8ArrayObjectMessageSchema);
+  const generator = generateSchema(Uint8ArrayObjectMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer(
-    {
-      count: [
-        {shoes: true, count: 12},
-        {shoes: false, count: 34},
-      ],
-    },
-    generator
-  );
+  const buffer = generator.toBuffer({
+    count: [
+      {shoes: true, count: 12},
+      {shoes: false, count: 34},
+    ],
+  });
   expect(buffer.byteLength).toEqual((1 + 1) * 2 + 1);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.count).toEqual([
     {shoes: true, count: 12},
     {shoes: false, count: 34},

@@ -1,11 +1,11 @@
-import {makeCustom, makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeCustomSchema, makeSchema} from '../src';
 
 type CustomTypeMessage = {testId: string};
 
-export const customSchemaTypes = makeCustom({
+export const customSchemaTypes = makeCustomSchema({
   specialId: {
-    read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),
-    write: (model, buffer) => {
+    read: (buffer): string => buffer.readInt16() + '-' + buffer.readInt16(),
+    write: (model: string, buffer) => {
       const specialIdParse = /(-?\d*)-(-?\d*)/;
       const specialIdResult = specialIdParse.exec(model);
       const x = parseInt(specialIdResult[1]);
@@ -13,21 +13,18 @@ export const customSchemaTypes = makeCustom({
       buffer.addInt16(x);
       buffer.addInt16(y);
     },
-    size: (model) => 2 + 2,
+    size: (model: string) => 2 + 2,
   },
 });
 
 const CustomTypeMessageSchema = makeSchema<CustomTypeMessage, typeof customSchemaTypes>({testId: 'specialId'});
 
 test('custom type test', () => {
-  const generator = SchemaDefiner.generate<CustomTypeMessage, typeof customSchemaTypes>(
-    CustomTypeMessageSchema,
-    customSchemaTypes
-  );
+  const generator = generateSchema(CustomTypeMessageSchema, customSchemaTypes);
 
-  const buffer = SchemaDefiner.toBuffer({testId: '12345-12344'}, generator);
+  const buffer = generator.toBuffer({testId: '12345-12344'});
   expect(buffer.byteLength).toEqual(4);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.testId).toEqual('12345-12344');
 });

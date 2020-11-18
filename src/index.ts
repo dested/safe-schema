@@ -1,2 +1,2 @@
-export {makeCustom, SchemaDefiner, makeSchema} from './schemaDefiner';
+export {makeSchema, generateSchema, makeCustomSchema} from './schemaDefiner';
 export {SafeSchema} from './schemaDefinerTypes';

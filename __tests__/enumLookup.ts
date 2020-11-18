@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 
 type EnumMessage = {switcher: 'a' | 'b' | 'c'};
 const EnumMessageSchema = makeSchema<EnumMessage>({
@@ -11,11 +11,11 @@ const EnumMessageSchema = makeSchema<EnumMessage>({
 });
 
 test('enum test', () => {
-  const generator = SchemaDefiner.generate<EnumMessage>(EnumMessageSchema);
+  const generator = generateSchema(EnumMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({switcher: 'a'}, generator);
+  const buffer = generator.toBuffer({switcher: 'a'});
   expect(buffer.byteLength).toEqual(1);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.switcher).toEqual('a');
 });

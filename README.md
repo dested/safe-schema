@@ -31,28 +31,28 @@ $ yarn add safe-schema
 
 ```ts
 // Import
-import {makeSchema, SchemaDefiner} from 'safe-schema';
+import {makeSchema, generateSchema} from 'safe-schema';
 
 // Define your model
 type SimpleMessage = {count: number};
 
 // Safely define your schema BASED on your model
-const SimpleMessageSchema = makeSchema<SimpleMessage>({count: 'uint8'});
+const simpleMessageSchema = makeSchema<SimpleMessage>({count: 'uint8'});
 
 // ...
 
 // Initialize the AOT code generator (only once)
-const generator = SchemaDefiner.generate<SimpleMessage>(SimpleMessageSchema);
+const generator = generateSchema(simpleMessageSchema);
 
 // Turn your object into an ArrayBuffer
-const buffer = SchemaDefiner.toBuffer({count: 12}, generator);
+const buffer = generator.toBuffer({count: 12});
 
 assert(buffer.byteLength === 1);
 
 // ...
 
 // Turn your ArrayBuffer back into your object
-const result = SchemaDefiner.fromBuffer(buffer, generator);
+const result = generator.fromBuffer(buffer);
 
 // Use your 100% type safe object on the other side of the wire
 assert(result.count === 12);
@@ -62,7 +62,7 @@ assert(result.count === 12);
 
 You define your network schema just as you normally would using TypeScript types, then use `SafeSchema` to generate a runtime version of that schema. You will get full intellisense support when invoking `makeSchema<SimpleMessage>({})`, allowing you to easily define the DataTypes of your model (for instance `number` as `uint16`), as well as the ability to easily **change your schema** and have TypeScript throw the appropriate errors for missing values at compile time.
 
-Calling `SchemaDefiner.generate<SimpleMessage>(SimpleMessageSchema)` generates JavaScript **at runtime** that is hand built to read and write your model to and from an `ArrayBuffer`. There is no switch case behind the scenes, every model generates unique JavaScript which executes **lightning fast**! Only exactly as many bytes will be sent over the wire as needed.
+Calling `generateSchema(simpleMessageSchema)` generates JavaScript **at runtime** that is hand built to read and write your model to and from an `ArrayBuffer`. There is no switch case behind the scenes, every model generates unique JavaScript which executes **lightning fast**! Only exactly as many bytes will be sent over the wire as needed.
 
 Take a look at the [complexGameState](__tests__/complexGameState.ts), [kitchenSink](__tests__/kitchenSink.ts), and the other tests for complex and real-world examples.
 
@@ -94,7 +94,7 @@ Example:
 ```ts
 type SimpleMessage = {count: number};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({count: 'int32'});
+const simpleMessageSchema = makeSchema<SimpleMessage>({count: 'int32'});
 ```
 
 TypeScript intellisense will only allow values that are valid. The valid values are:
@@ -119,7 +119,7 @@ Example:
 ```ts
 type SimpleMessage = {count: string};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({count: 'string'});
+const simpleMessageSchema = makeSchema<SimpleMessage>({count: 'string'});
 ```
 
 ### boolean
@@ -133,7 +133,7 @@ Example:
 ```ts
 type SimpleMessage = {count: boolean};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({count: 'boolean'});
+const simpleMessageSchema = makeSchema<SimpleMessage>({count: 'boolean'});
 ```
 
 ### optional
@@ -147,7 +147,7 @@ Example:
 ```ts
 type SimpleMessage = {count?: number};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({
+const simpleMessageSchema = makeSchema<SimpleMessage>({
   count: {
     flag: 'optional',
     element: 'uint8',
@@ -165,7 +165,7 @@ Example:
 
 ```ts
 type SimpleMessage = {count: boolean[]};
-const SimpleMessageSchema = makeSchema<SimpleMessage>({
+const simpleMessageSchema = makeSchema<SimpleMessage>({
   count: {
     flag: 'array-uint8',
     elements: 'boolean',
@@ -194,7 +194,7 @@ Example:
 ```ts
 type SimpleMessage = {type: 'run'; duration: number} | {type: 'walk'; speed: number};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({
+const simpleMessageSchema = makeSchema<SimpleMessage>({
   flag: 'type-lookup',
   elements: {
     run: {duration: 'uint8'},
@@ -214,7 +214,7 @@ Example:
 ```ts
 type SimpleMessage = {weapon: 'sword' | 'laser' | 'shoe'};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({
+const simpleMessageSchema = makeSchema<SimpleMessage>({
   flag: 'enum',
   sword: '0',
   laser: '1',
@@ -233,7 +233,7 @@ Example:
 ```ts
 type SimpleMessage = {team: 1 | 2 | 3};
 
-const SimpleMessageSchema = makeSchema<SimpleMessage>({
+const simpleMessageSchema = makeSchema<SimpleMessage>({
   flag: 'enum',
   1: 1,
   2: 2,
@@ -276,20 +276,20 @@ const BitMaskMessageSchema = makeSchema<BitMaskMessage>({
 
 If these data types don't suit all of your needs, you can define your own custom schema type.
 
-You must define a `customSchemaType` using `makeCustom`. The keys of the object you pass in will be the string you use in your schema. You must define how to read, write, and the size of the model. This `customSchemaType` can now be passed into `makeSchema` so it is aware of your custom keys. 
+You must define a `customSchemaType` using `makeCustom`. The keys of the object you pass in will be the string you use in your schema. You must define how to read, write, and the size of the model. This `customSchemaType` can now be passed into `makeSchema` so it is aware of your custom keys.
 
 Note that you must also pass `customSchemaTypes` into the `generate` function
 
 Example:
 
 ```ts
-import {makeCustom, makeSchema, SchemaDefiner} from 'safe-schema';
+import {makeCustomSchema, makeSchema, generateSchema} from 'safe-schema';
 
-export const customSchemaTypes = makeCustom({
+export const customSchemaTypes = makeCustomSchema({
   specialId: {
     // this turns the string 123-456 into two int16's
-    read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),
-    write: (model, buffer) => {
+    read: (buffer): string => buffer.readInt16() + '-' + buffer.readInt16(),
+    write: (model: string, buffer) => {
       const specialIdParse = /(-?\d*)-(-?\d*)/;
       const specialIdResult = specialIdParse.exec(model);
       const x = parseInt(specialIdResult[1]);
@@ -297,7 +297,7 @@ export const customSchemaTypes = makeCustom({
       buffer.addInt16(x);
       buffer.addInt16(y);
     },
-    size: (model) => 2 + 2,
+    size: (model: string) => 2 + 2,
   },
 });
 
@@ -305,8 +305,5 @@ type CustomTypeMessage = {testId: string};
 
 const CustomTypeMessageSchema = makeSchema<CustomTypeMessage, typeof customSchemaTypes>({testId: 'specialId'});
 
-const generator = SchemaDefiner.generate<CustomTypeMessage, typeof customSchemaTypes>(
-  CustomTypeMessageSchema,
-  customSchemaTypes
-);
+const generator = generateSchema(CustomTypeMessageSchema, customSchemaTypes);
 ```

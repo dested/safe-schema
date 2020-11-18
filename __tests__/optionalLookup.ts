@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 
 type UInt8Message = {count?: number};
 const UInt8MessageSchema = makeSchema<UInt8Message>({
@@ -9,21 +9,21 @@ const UInt8MessageSchema = makeSchema<UInt8Message>({
 });
 
 test('uint8 optional test set', () => {
-  const generator = SchemaDefiner.generate<UInt8Message>(UInt8MessageSchema);
+  const generator = generateSchema(UInt8MessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({count: 12}, generator);
+  const buffer = generator.toBuffer({count: 12});
   expect(buffer.byteLength).toEqual(2);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.count).toEqual(12);
 });
 
 test('uint8 optional test unset', () => {
-  const generator = SchemaDefiner.generate<UInt8Message>(UInt8MessageSchema);
+  const generator = generateSchema(UInt8MessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({count: undefined}, generator);
+  const buffer = generator.toBuffer({count: undefined});
   expect(buffer.byteLength).toEqual(1);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.count).toEqual(undefined);
 });

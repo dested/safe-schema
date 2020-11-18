@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 
 type Weapons = 'sword' | 'laser';
 
@@ -54,22 +54,19 @@ const KitchenSinkMessageSchema = makeSchema<KitchenSinkMessage>({
 });
 
 test('kitchen sink test', () => {
-  const generator = SchemaDefiner.generate<KitchenSinkMessage>(KitchenSinkMessageSchema);
+  const generator = generateSchema(KitchenSinkMessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer(
-    {
-      message: 'The game is on!',
-      items: [
-        {type: 'weapon', strength: 12, weapon: 'sword'},
-        {type: 'weapon', strength: 34, weapon: 'laser'},
-        {type: 'run', duration: 45, direction: {down: true, left: false, right: true, up: false}},
-      ],
-    },
-    generator
-  );
+  const buffer = generator.toBuffer({
+    message: 'The game is on!',
+    items: [
+      {type: 'weapon', strength: 12, weapon: 'sword'},
+      {type: 'weapon', strength: 34, weapon: 'laser'},
+      {type: 'run', duration: 45, direction: {down: true, left: false, right: true, up: false}},
+    ],
+  });
   expect(buffer.byteLength).toEqual(49);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result).toEqual({
     message: 'The game is on!',
     items: [

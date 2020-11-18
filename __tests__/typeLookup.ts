@@ -1,4 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeSchema} from '../src';
 import {assertType} from '../src/utils';
 
 type Messages =
@@ -20,13 +20,13 @@ const MessageSchema = makeSchema<Messages>({
 });
 
 test('type lookup test', () => {
-  const generator = SchemaDefiner.generate<Messages>(MessageSchema);
+  const generator = generateSchema<Messages>(MessageSchema);
 
-  const buffer = SchemaDefiner.toBuffer({type: 'pong', shoes: 12}, generator);
+  const buffer = generator.toBuffer({type: 'pong', shoes: 12});
 
   expect(buffer.byteLength).toEqual(5);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result.type).toEqual('pong');
   assertType<'pong'>(result.type);
   expect(result.shoes).toEqual(12);

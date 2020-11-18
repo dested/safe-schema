@@ -1,4 +1,4 @@
-import {makeCustom, makeSchema, SchemaDefiner} from '../src';
+import {generateSchema, makeCustomSchema, makeSchema} from '../src';
 import {ArrayBufferReader} from '../src/arrayBufferBuilder';
 
 export type OfFaction<T> = {[faction in PlayableFactionId]?: T};
@@ -83,10 +83,10 @@ export interface GameStateResource {
 }
 export type ResourceType = 'bronze' | 'silver' | 'gold';
 
-export const customSchemaTypes = makeCustom({
+export const customSchemaTypes = makeCustomSchema({
   hexId: {
-    read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),
-    write: (model, buffer) => {
+    read: (buffer): string => buffer.readInt16() + '-' + buffer.readInt16(),
+    write: (model: string, buffer) => {
       const hexIdParse = /(-?\d*)-(-?\d*)/;
       const hexIdResult = hexIdParse.exec(model);
       const x = parseInt(hexIdResult[1]);
@@ -94,10 +94,10 @@ export const customSchemaTypes = makeCustom({
       buffer.addInt16(x);
       buffer.addInt16(y);
     },
-    size: (model) => 2 + 2,
+    size: (model: string) => 2 + 2,
   },
   byteArray: {
-    read: (buffer) => {
+    read: (buffer): number[] => {
       const byteArray = (len: number, realLength: number, reader: ArrayBufferReader) => {
         function padLeft(data, size, paddingChar) {
           return (new Array(size + 1).join(paddingChar) + data).slice(-size);
@@ -115,7 +115,7 @@ export const customSchemaTypes = makeCustom({
 
       return byteArray(buffer.readUint32(), buffer.readUint32(), buffer);
     },
-    write: (model, buffer) => {
+    write: (model: number[], buffer) => {
       const byteLen = Math.ceil(model.length / 10);
       buffer.addUint32(byteLen);
       buffer.addUint32(model.length);
@@ -123,7 +123,7 @@ export const customSchemaTypes = makeCustom({
         buffer.addUint32(parseInt(model.slice(model_i * 10, (model_i + 1) * 10).join(''), 8));
       }
     },
-    size: (model) => 4 + 4 + Math.ceil(model.length / 10) * 4,
+    size: (model: number[]) => 4 + 4 + Math.ceil(model.length / 10) * 4,
   },
 });
 
@@ -525,7 +525,7 @@ export const GameStateSchema = makeSchema<GameState, typeof customSchemaTypes>({
 });
 
 test('complex game state test', () => {
-  const generator = SchemaDefiner.generate<GameState, typeof customSchemaTypes>(GameStateSchema, customSchemaTypes);
+  const generator = generateSchema(GameStateSchema, customSchemaTypes);
 
   const model: GameState = {
     gameId: 'abc',
@@ -746,9 +746,9 @@ test('complex game state test', () => {
       ],
     },
   };
-  const buffer = SchemaDefiner.toBuffer(model, generator);
+  const buffer = generator.toBuffer(model);
   expect(buffer.byteLength).toEqual(452);
 
-  const result = SchemaDefiner.fromBuffer(buffer, generator);
+  const result = generator.fromBuffer(buffer);
   expect(result).toEqual(model);
 });
