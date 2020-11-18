@@ -1,4 +1,4 @@
-import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SchemaDefiner} from '../src';
 
 type UInt8Message = {count?: number};
 const UInt8MessageSchema = makeSchema<UInt8Message>({

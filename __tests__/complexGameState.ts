@@ -1,5 +1,4 @@
-import {makeSchema, SchemaDefiner} from '../src';
-import {CustomSchemaTypes} from '../src/schemaDefinerTypes';
+import {makeCustom, makeSchema, SchemaDefiner} from '../src';
 import {ArrayBufferReader} from '../src/arrayBufferBuilder';
 
 export type OfFaction<T> = {[faction in PlayableFactionId]?: T};
@@ -84,7 +83,7 @@ export interface GameStateResource {
 }
 export type ResourceType = 'bronze' | 'silver' | 'gold';
 
-export const customSchemaTypes: CustomSchemaTypes<{hexId: string; byteArray: number[]}> = {
+export const customSchemaTypes = makeCustom({
   hexId: {
     read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),
     write: (model, buffer) => {
@@ -126,7 +125,7 @@ export const customSchemaTypes: CustomSchemaTypes<{hexId: string; byteArray: num
     },
     size: (model) => 4 + 4 + Math.ceil(model.length / 10) * 4,
   },
-};
+});
 
 export const GameStateSchema = makeSchema<GameState, typeof customSchemaTypes>({
   gameId: 'string',
@@ -526,7 +525,6 @@ export const GameStateSchema = makeSchema<GameState, typeof customSchemaTypes>({
 });
 
 test('complex game state test', () => {
-  debugger;
   const generator = SchemaDefiner.generate<GameState, typeof customSchemaTypes>(GameStateSchema, customSchemaTypes);
 
   const model: GameState = {

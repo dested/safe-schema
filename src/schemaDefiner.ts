@@ -11,7 +11,7 @@ export type SchemaGenerator<T, TCustom> = {
 
 export class SchemaDefiner {
   static generateAdderFunction<T, TCustom>(
-    schema: SafeSchema<T, keyof TCustom>,
+    schema: SafeSchema<T, TCustom>,
     customSchema: TCustom = {} as any
   ): AdderFunction<T, TCustom> {
     const objectMaps: string[] = [];
@@ -38,7 +38,7 @@ return buff.buildBuffer()
     return eval(code);
   }
   static generateAdderSizeFunction<T, TCustom>(
-    schema: SafeSchema<T, keyof TCustom>,
+    schema: SafeSchema<T, TCustom>,
     customSchema: TCustom = {} as any
   ): AdderSizeFunction<T, TCustom> {
     const objectMaps: string[] = [];
@@ -71,7 +71,7 @@ return (${code}0);
   }
 
   static generateReaderFunction<T, TCustom>(
-    schema: SafeSchema<T, keyof TCustom>,
+    schema: SafeSchema<T, TCustom>,
     customSchema: TCustom = {} as any
   ): ReaderFunction<T, TCustom> {
     const objectMaps: string[] = [];
@@ -118,7 +118,7 @@ return (${code}0);
   }
 
   static generate<T, TCustom = unknown>(
-    schema: SafeSchema<T, keyof TCustom>,
+    schema: SafeSchema<T, TCustom>,
     customSchema?: TCustom
   ): SchemaGenerator<T, TCustom> {
     const readerFunction = SchemaDefiner.generateReaderFunction<T, TCustom>(schema, customSchema);
@@ -450,16 +450,18 @@ ${safeKeysExclude(schema, 'flag')
 }
 
 type AdderSizeFunction<T, TCustom> = (value: T, customSchemaTypes: CustomSchemaTypes<TCustom>) => number;
+
 type AdderFunction<T, TCustom> = (
   buff: ArrayBufferBuilder,
   value: T,
   customSchemaTypes: CustomSchemaTypes<TCustom>
 ) => ArrayBuffer;
+
 type ReaderFunction<T, TCustom> = (reader: ArrayBufferReader, customSchemaTypes: CustomSchemaTypes<TCustom>) => T;
 
 export function makeCustom<T>(t: CustomSchemaTypes<T>): CustomSchemaTypes<T> {
   return t;
 }
-export function makeSchema<T, TCustom = unknown>(t: SafeSchema<T, keyof TCustom>): SafeSchema<T, keyof TCustom> {
+export function makeSchema<T, TCustom = unknown>(t: SafeSchema<T, TCustom>): SafeSchema<T, TCustom> {
   return t;
 }

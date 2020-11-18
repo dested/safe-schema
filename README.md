@@ -29,8 +29,6 @@ $ yarn add safe-schema
 
 ## Basic Usage
 
-### Node
-
 ```ts
 // Import
 import {makeSchema, SchemaDefiner} from 'safe-schema';
@@ -62,7 +60,7 @@ assert(result.count === 12);
 
 ## How It Works
 
-You define your network schema just as you normally would using TypeScript types, then use `SafeSchema` to generate a runtime version of that schema. You will get full intellisense support when defining `SafeSchema<SimpleMessage>`, allowing you to easily define the DataTypes of your model (for instance `number` as `uint16`), as well as the ability to easily **change your schema** and have TypeScript throw the appropriate errors for missing values at compile time.
+You define your network schema just as you normally would using TypeScript types, then use `SafeSchema` to generate a runtime version of that schema. You will get full intellisense support when invoking `makeSchema<SimpleMessage>({})`, allowing you to easily define the DataTypes of your model (for instance `number` as `uint16`), as well as the ability to easily **change your schema** and have TypeScript throw the appropriate errors for missing values at compile time.
 
 Calling `SchemaDefiner.generate<SimpleMessage>(SimpleMessageSchema)` generates JavaScript **at runtime** that is hand built to read and write your model to and from an `ArrayBuffer`. There is no switch case behind the scenes, every model generates unique JavaScript which executes **lightning fast**! Only exactly as many bytes will be sent over the wire as needed.
 
@@ -278,7 +276,7 @@ const BitMaskMessageSchema = makeSchema<BitMaskMessage>({
 
 If these data types don't suit all of your needs, you can define your own custom schema type.
 
-You must define a `customSchemaType` using `makeCustom` that takes the custom keys, and their types as a generic argument. You then must define how to read, write, and the size of the model. This `customSchemaType` can now be passed into `makeSchema` so it is aware of your custom keys. This key can be used any where in your schema that matches the correct type.
+You must define a `customSchemaType` using `makeCustom`. The keys of the object you pass in will be the string you use in your schema. You must define how to read, write, and the size of the model. This `customSchemaType` can now be passed into `makeSchema` so it is aware of your custom keys. 
 
 Note that you must also pass `customSchemaTypes` into the `generate` function
 
@@ -287,7 +285,7 @@ Example:
 ```ts
 import {makeCustom, makeSchema, SchemaDefiner} from 'safe-schema';
 
-export const customSchemaTypes = makeCustom<{specialId: string}>({
+export const customSchemaTypes = makeCustom({
   specialId: {
     // this turns the string 123-456 into two int16's
     read: (buffer) => buffer.readInt16() + '-' + buffer.readInt16(),

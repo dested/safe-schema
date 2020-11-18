@@ -71,13 +71,13 @@ export type SafeSchema<T, TCustom = unknown> =
         ? SafeSchemaTypeLookupElements<T, TCustom>
         : SafeSchemaSimpleObject<T, TCustom>
       : never)
-  | TCustom;
+  | keyof TCustom;
 
 export type CustomSchemaTypes<TCustom> = {
   [key in keyof TCustom]: {
-    read: (buffer: ArrayBufferReader) => TCustom[key];
-    write: (model: TCustom[key], buffer: ArrayBufferBuilder) => void;
-    size: (model: TCustom[key]) => number;
+    read: (buffer: ArrayBufferReader) => any;
+    write: (model: any, buffer: ArrayBufferBuilder) => void;
+    size: (model: any) => number;
   };
 };
 

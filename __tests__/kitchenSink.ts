@@ -1,4 +1,4 @@
-import {makeSchema, SafeSchema, SchemaDefiner} from '../src';
+import {makeSchema, SchemaDefiner} from '../src';
 
 type Weapons = 'sword' | 'laser';
 
