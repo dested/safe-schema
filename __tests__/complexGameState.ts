@@ -127,121 +127,77 @@ export const customSchemaTypes = makeCustomSchema({
   },
 });
 
+const factionDetailsSchema = makeSchema<OfFaction<FactionDetail>, typeof customSchemaTypes>({
+  '1': {
+    flag: 'optional',
+    element: {
+      resourceCount: 'uint16',
+    },
+  },
+  2: {
+    flag: 'optional',
+    element: {
+      resourceCount: 'uint16',
+    },
+  },
+  '3': {
+    flag: 'optional',
+    element: {
+      resourceCount: 'uint16',
+    },
+  },
+});
+
+const entitySchema = makeSchema<GameStateEntity, typeof customSchemaTypes>({
+  x: 'int16',
+  y: 'int16',
+  health: 'uint8',
+  id: 'uint32',
+  healthRegenStep: 'uint8',
+  facingDirection: 'uint8',
+  entityType: {flag: 'enum', factory: 1, infantry: 2, plane: 3, tank: 4},
+  busy: {
+    flag: 'optional',
+    element: {
+      action: {
+        flag: 'enum',
+        'spawn-infantry': 1,
+        'spawn-tank': 2,
+        'spawn-plane': 3,
+        attack: 4,
+        mine: 5,
+        move: 6,
+      },
+      hexId: 'hexId',
+      ticks: 'uint32',
+    },
+  },
+});
+
 export const GameStateSchema = makeSchema<GameState, typeof customSchemaTypes>({
   gameId: 'string',
   factions: 'byteArray',
-  factionDetails: {
-    '1': {
-      flag: 'optional',
-      element: {
-        resourceCount: 'uint16',
-      },
-    },
-    2: {
-      flag: 'optional',
-      element: {
-        resourceCount: 'uint16',
-      },
-    },
-    '3': {
-      flag: 'optional',
-      element: {
-        resourceCount: 'uint16',
-      },
-    },
-  },
+  factionDetails: factionDetailsSchema,
   entities: {
     1: {
       flag: 'optional',
       element: {
         flag: 'array-uint16',
-        elements: {
-          x: 'int16',
-          y: 'int16',
-          health: 'uint8',
-          id: 'uint32',
-          healthRegenStep: 'uint8',
-          facingDirection: 'uint8',
-          entityType: {flag: 'enum', factory: 1, infantry: 2, plane: 3, tank: 4},
-          busy: {
-            flag: 'optional',
-            element: {
-              action: {
-                flag: 'enum',
-                'spawn-infantry': 1,
-                'spawn-tank': 2,
-                'spawn-plane': 3,
-                attack: 4,
-                mine: 5,
-                move: 6,
-              },
-              hexId: 'hexId',
-              ticks: 'uint32',
-            },
-          },
-        },
+        elements: entitySchema,
       },
     },
     2: {
       flag: 'optional',
       element: {
         flag: 'array-uint16',
-        elements: {
-          x: 'int16',
-          y: 'int16',
-          health: 'uint8',
-          id: 'uint32',
-          healthRegenStep: 'uint8',
-          facingDirection: 'uint8',
-          entityType: {flag: 'enum', factory: 1, infantry: 2, plane: 3, tank: 4},
-          busy: {
-            flag: 'optional',
-            element: {
-              action: {
-                flag: 'enum',
-                'spawn-infantry': 1,
-                'spawn-tank': 2,
-                'spawn-plane': 3,
-                attack: 4,
-                mine: 5,
-                move: 6,
-              },
-              hexId: 'hexId',
-              ticks: 'uint32',
-            },
-          },
-        },
+        elements: entitySchema,
       },
     },
     3: {
       flag: 'optional',
       element: {
         flag: 'array-uint16',
-        elements: {
-          x: 'int16',
-          y: 'int16',
-          health: 'uint8',
-          id: 'uint32',
-          healthRegenStep: 'uint8',
-          facingDirection: 'uint8',
-          entityType: {flag: 'enum', factory: 1, infantry: 2, plane: 3, tank: 4},
-          busy: {
-            flag: 'optional',
-            element: {
-              action: {
-                flag: 'enum',
-                'spawn-infantry': 1,
-                'spawn-tank': 2,
-                'spawn-plane': 3,
-                attack: 4,
-                mine: 5,
-                move: 6,
-              },
-              hexId: 'hexId',
-              ticks: 'uint32',
-            },
-          },
-        },
+        elements: entitySchema,
       },
     },
   },

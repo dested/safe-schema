@@ -185,18 +185,18 @@ function buildAdderFunction(
       assertType<ABFlags>(schema);
       switch (schema.flag) {
         case 'enum': {
-          return `({ 
-${safeKeysExclude(schema, 'flag')
-  .map((key) => `['${key}']:()=>buff.addUint8(${schema[key]}),`)
-  .join('\n')}
-})[${fieldName}]();`;
+          return `switch(${fieldName}){
+          ${safeKeysExclude(schema, 'flag')
+            .map((key) => `case '${key}':buff.addUint8(${schema[key]});break;`)
+            .join('\n')}
+          }`;
         }
         case 'number-enum': {
-          return `({ 
-${safeKeysExclude(schema, 'flag')
-  .map((key) => `[${key}]:()=>buff.addUint8(${schema[key]}),`)
-  .join('\n')}
-})[${fieldName}]();`;
+          return `switch(${fieldName}){
+          ${safeKeysExclude(schema, 'flag')
+            .map((key) => `case ${key}:buff.addUint8(${schema[key]});break;`)
+            .join('\n')}
+          }`;
         }
         case 'bitmask': {
           return `buff.addBits(...[
@@ -223,17 +223,18 @@ ${safeKeysExclude(schema, 'flag')
     }`;
         }
         case 'type-lookup': {
-          let map = '{\n';
-          let index = 0;
-          for (const key of Object.keys(schema.elements)) {
-            map += `['${key}']:()=>{
-              buff.addUint8(${index});
-              ${buildAdderFunction(schema.elements[key], fieldName, addMap, customSchema)}
-              },`;
-            index++;
-          }
-          map += '}\n';
-          return `(${map})[${fieldName}.type]();`;
+          return `switch(${fieldName}.type){
+          ${Object.keys(schema.elements)
+            .map(
+              (key, index) =>
+                `case '${key}':{
+                buff.addUint8(${index});
+                ${buildAdderFunction(schema.elements[key], fieldName, addMap, customSchema)};
+                break;
+                }`
+            )
+            .join('\n')}
+          }`;
         }
         case 'optional': {
           return `buff.addBoolean(${fieldName}!==undefined);
