@@ -222,6 +222,14 @@ ${safeKeysExclude(schema, 'flag')
       ${buildAdderFunction(schema.elements, noPeriodsFieldName + 'Element', addMap, customSchema)}
     }`;
         }
+        case 'array-uint32': {
+          const noPeriodsFieldName = fieldName.replace(/\["/g, '_').replace(/"]/g, '');
+          return `
+           buff.addUint32(${fieldName}.length);
+    for (const ${noPeriodsFieldName}Element of ${fieldName}) {
+      ${buildAdderFunction(schema.elements, noPeriodsFieldName + 'Element', addMap, customSchema)}
+    }`;
+        }
         case 'type-lookup': {
           return `switch(${fieldName}.type){
           ${Object.keys(schema.elements)
@@ -306,18 +314,23 @@ function buildAdderSizeFunction(
             customSchema
           )}0):0)+`;
         }
-        case 'array-uint8': {
+        case 'array-uint8':
+        case 'array-uint16':
+        case 'array-uint32': {
           const noPeriodsFieldName = fieldName.replace(/\["/g, '_').replace(/"]/g, '');
-          return `1+sum(${fieldName}.map(${noPeriodsFieldName + 'Element'}=>(${buildAdderSizeFunction(
-            schema.elements,
-            noPeriodsFieldName + 'Element',
-            addMap,
-            customSchema
-          )}0)))+`;
-        }
-        case 'array-uint16': {
-          const noPeriodsFieldName = fieldName.replace(/\["/g, '_').replace(/"]/g, '');
-          return `2+sum(${fieldName}.map(${noPeriodsFieldName + 'Element'}=>(${buildAdderSizeFunction(
+          let size: number;
+          switch (schema.flag) {
+            case 'array-uint8':
+              size = 1;
+              break;
+            case 'array-uint16':
+              size = 2;
+              break;
+            case 'array-uint32':
+              size = 4;
+              break;
+          }
+          return `${size}+sum(${fieldName}.map(${noPeriodsFieldName + 'Element'}=>(${buildAdderSizeFunction(
             schema.elements,
             noPeriodsFieldName + 'Element',
             addMap,
@@ -401,6 +414,9 @@ function buildReaderFunction(
         }
         case 'array-uint16': {
           return `range(reader.readUint16(),()=>(${buildReaderFunction(schema.elements, addMap, customSchema)}))`;
+        }
+        case 'array-uint32': {
+          return `range(reader.readUint32(),()=>(${buildReaderFunction(schema.elements, addMap, customSchema)}))`;
         }
         case 'optional': {
           return `reader.readBoolean()?

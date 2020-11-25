@@ -19,7 +19,7 @@ export declare type SafeSchemaBitmask<T> = {
 };
 export declare type SafeSchemaArray<TElements> = {
     elements: TElements;
-    flag: 'array-uint8' | 'array-uint16';
+    flag: 'array-uint8' | 'array-uint16' | 'array-uint32';
 };
 export declare type SafeSchemaTypeLookupElements<TElements extends {
     type: string;
@@ -73,6 +73,9 @@ export declare type ABFlags = {
     flag: 'optional';
 } | {
     flag: 'bitmask';
+} | {
+    elements: any;
+    flag: 'array-uint32';
 } | {
     elements: any;
     flag: 'array-uint16';

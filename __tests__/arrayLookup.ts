@@ -26,7 +26,7 @@ const Uint16ArrayMessageSchema = makeSchema<Uint16ArrayMessage>({
   },
 });
 
-test('array unit8 test', () => {
+test('array unit16 test', () => {
   const generator = generateSchema(Uint16ArrayMessageSchema);
 
   const buffer = generator.toBuffer({count: [12, 24]});
@@ -36,6 +36,23 @@ test('array unit8 test', () => {
   expect(result.count).toEqual([12, 24]);
 });
 
+type Uint32ArrayMessage = {count: number[]};
+const Uint32ArrayMessageSchema = makeSchema<Uint32ArrayMessage>({
+  count: {
+    flag: 'array-uint32',
+    elements: 'uint32',
+  },
+});
+
+test('array unit32 test', () => {
+  const generator = generateSchema(Uint32ArrayMessageSchema);
+
+  const buffer = generator.toBuffer({count: [12, 24]});
+  expect(buffer.byteLength).toEqual(4 * 2 + 4);
+
+  const result = generator.fromBuffer(buffer);
+  expect(result.count).toEqual([12, 24]);
+});
 type Uint8ArrayObjectMessage = {count: {shoes: boolean; count: number}[]};
 const Uint8ArrayObjectMessageSchema = makeSchema<Uint8ArrayObjectMessage>({
   count: {

@@ -6,7 +6,7 @@ type Discriminate<T, TField extends keyof T, TValue extends T[TField]> = T exten
 export type SafeSchemaEnum<T extends string> = {[key in T]: number} & {flag: 'enum'};
 export type SafeSchemaNumberEnum<T extends number> = {[key in T]: number} & {flag: 'number-enum'};
 export type SafeSchemaBitmask<T> = {[keyT in keyof T]-?: number} & {flag: 'bitmask'};
-export type SafeSchemaArray<TElements> = {elements: TElements; flag: 'array-uint8' | 'array-uint16'};
+export type SafeSchemaArray<TElements> = {elements: TElements; flag: 'array-uint8' | 'array-uint16' | 'array-uint32'};
 
 export type SafeSchemaTypeLookupElements<TElements extends {type: string}, TCustom> = {
   elements: {
@@ -86,6 +86,7 @@ export type ABFlags =
   | {flag: 'number-enum'}
   | {element: any; flag: 'optional'}
   | {flag: 'bitmask'}
+  | {elements: any; flag: 'array-uint32'}
   | {elements: any; flag: 'array-uint16'}
   | {elements: any; flag: 'array-uint8'}
   | {elements: {[key: string]: ABSchemaDef}; flag: 'type-lookup'}

@@ -159,7 +159,7 @@ const simpleMessageSchema = makeSchema<SimpleMessage>({
 
 <a name="array" />
 
-SafeSchema can encode any type as an array. You must specify the max length of the array, either `array-uint8` or `array-uint16`
+SafeSchema can encode any type as an array. You must specify the max length of the array, either `array-uint8`, `array-uint16`, or `array-uint32`
 
 Example:
 
