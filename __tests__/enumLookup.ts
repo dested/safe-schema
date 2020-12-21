@@ -4,9 +4,9 @@ type EnumMessage = {switcher: 'a' | 'b' | 'c'};
 const EnumMessageSchema = makeSchema<EnumMessage>({
   switcher: {
     flag: 'enum',
-    a: 0,
-    b: 1,
-    c: 2,
+    a: 1,
+    b: 2,
+    c: 3,
   },
 });
 

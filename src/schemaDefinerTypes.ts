@@ -3,7 +3,7 @@ import {ArrayBufferBuilder, ArrayBufferReader} from './arrayBufferBuilder';
 type Discriminate<T, TField extends keyof T, TValue extends T[TField]> = T extends {[field in TField]: TValue}
   ? T
   : never;
-export type SafeSchemaEnum<T extends string> = {[key in T]: number} & {flag: 'enum'};
+export type SafeSchemaEnum<T extends string> = Record<T, number> & {flag: 'enum'};
 export type SafeSchemaNumberEnum<T extends number> = {[key in T]: number} & {flag: 'number-enum'};
 export type SafeSchemaBitmask<T> = {[keyT in keyof T]-?: number} & {flag: 'bitmask'};
 export type SafeSchemaArray<TElements> = {elements: TElements; flag: 'array-uint8' | 'array-uint16' | 'array-uint32'};
@@ -48,14 +48,20 @@ type RequiredPropertyOf<T> = Exclude<
 >;
 
 type SafeSchemaSimple<T> = T extends string
-  ? 'string' | SafeSchemaEnum<T>
+  ? 'string'
   : T extends number
-  ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' | SafeSchemaNumberEnum<T>
+  ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64'
   : T extends boolean
   ? 'boolean'
   : never;
 
-export type SafeSchema<T, TCustom extends {}> = T extends string | boolean | number
+type Cast<T, TCast> = T extends TCast ? T : never;
+
+export type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T extends string ? 1 : 0] extends [0, 1]
+  ? SafeSchemaEnum<Cast<T, string>>
+  : [number extends T ? 1 : 0, T extends number ? 1 : 0] extends [0, 1]
+  ? SafeSchemaNumberEnum<Cast<T, number>>
+  : T extends string | boolean | number
   ? SafeSchemaSimple<T>
   : T extends Array<any>
   ? T[number] extends string | boolean | number

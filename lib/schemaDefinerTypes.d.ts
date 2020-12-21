@@ -2,9 +2,7 @@ import { ArrayBufferBuilder, ArrayBufferReader } from './arrayBufferBuilder';
 declare type Discriminate<T, TField extends keyof T, TValue extends T[TField]> = T extends {
     [field in TField]: TValue;
 } ? T : never;
-export declare type SafeSchemaEnum<T extends string> = {
-    [key in T]: number;
-} & {
+export declare type SafeSchemaEnum<T extends string> = Record<T, number> & {
     flag: 'enum';
 };
 export declare type SafeSchemaNumberEnum<T extends number> = {
@@ -49,8 +47,9 @@ declare type OptionalPropertyOf<T> = Exclude<{
 declare type RequiredPropertyOf<T> = Exclude<{
     [K in keyof T]: T extends Record<K, T[K]> ? K : never;
 }[keyof T], undefined>;
-declare type SafeSchemaSimple<T> = T extends string ? 'string' | SafeSchemaEnum<T> : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' | SafeSchemaNumberEnum<T> : T extends boolean ? 'boolean' : never;
-export declare type SafeSchema<T, TCustom extends {}> = T extends string | boolean | number ? SafeSchemaSimple<T> : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends {
+declare type SafeSchemaSimple<T> = T extends string ? 'string' : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' : T extends boolean ? 'boolean' : never;
+declare type Cast<T, TCast> = T extends TCast ? T : never;
+export declare type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T extends string ? 1 : 0] extends [0, 1] ? SafeSchemaEnum<Cast<T, string>> : [number extends T ? 1 : 0, T extends number ? 1 : 0] extends [0, 1] ? SafeSchemaNumberEnum<Cast<T, number>> : T extends string | boolean | number ? SafeSchemaSimple<T> : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends {
     type: string;
 } ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[number], TCustom>> | SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : T extends {
     [key in keyof T]: boolean;
