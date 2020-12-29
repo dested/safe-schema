@@ -1,8 +1,16 @@
 export declare class ArrayBufferBuilder {
+    private initialBufferSize;
     private sizeIsExact;
     buffer: ArrayBuffer;
+    uint: Uint8Array;
     curPosition: number;
     view: DataView;
+    static caches: Map<number, {
+        buffer: ArrayBuffer;
+        view: DataView;
+        uint: Uint8Array;
+    }>;
+    static biggestCachableBufferSize: number;
     constructor(initialBufferSize?: number, sizeIsExact?: boolean);
     addBits(...bools: boolean[]): void;
     addBoolean(value: boolean): void;
@@ -24,6 +32,7 @@ export declare class ArrayBufferBuilder {
     addUint8(value: number): void;
     buildBuffer(): ArrayBuffer;
     testSize(added: number): void;
+    dispose(): void;
 }
 export declare class ArrayBufferReader {
     private dv;

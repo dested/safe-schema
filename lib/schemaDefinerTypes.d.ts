@@ -49,7 +49,7 @@ declare type RequiredPropertyOf<T> = Exclude<{
 }[keyof T], undefined>;
 declare type SafeSchemaSimple<T> = T extends string ? 'string' : T extends number ? 'uint8' | 'uint16' | 'uint32' | 'int8' | 'int16' | 'int32' | 'float32' | 'float64' : T extends boolean ? 'boolean' : never;
 declare type Cast<T, TCast> = T extends TCast ? T : never;
-export declare type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T extends string ? 1 : 0] extends [0, 1] ? SafeSchemaEnum<Cast<T, string>> : [number extends T ? 1 : 0, T extends number ? 1 : 0] extends [0, 1] ? SafeSchemaNumberEnum<Cast<T, number>> : T extends string | boolean | number ? SafeSchemaSimple<T> : T extends ArrayBuffer ? 'arrayBuffer' : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends {
+export declare type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T extends string ? 1 : 0] extends [0, 1] ? SafeSchemaEnum<Cast<T, string>> : [number extends T ? 1 : 0, T extends number ? 1 : 0] extends [0, 1] ? SafeSchemaNumberEnum<Cast<T, number>> : T extends string | boolean | number ? SafeSchemaSimple<T> : T extends ArrayBuffer ? 'arrayBuffer' : T extends Array<any> ? T[number] extends string | boolean | number ? SafeSchemaArray<SafeSchemaSimple<T[number]>> : T[number] extends ArrayBuffer ? SafeSchemaArray<'arrayBuffer'> : T[number] extends {
     type: string;
 } ? SafeSchemaArray<SafeSchemaTypeLookupElements<T[number], TCustom>> | SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : SafeSchemaArray<SafeSchemaSimpleObject<T[number], TCustom>> : T extends {
     [key in keyof T]: boolean;

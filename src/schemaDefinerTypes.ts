@@ -68,6 +68,8 @@ export type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T ext
   : T extends Array<any>
   ? T[number] extends string | boolean | number
     ? SafeSchemaArray<SafeSchemaSimple<T[number]>>
+    : T[number] extends ArrayBuffer
+    ? SafeSchemaArray<'arrayBuffer'>
     : T[number] extends {type: string}
     ?
         | SafeSchemaArray<SafeSchemaTypeLookupElements<T[number], TCustom>>

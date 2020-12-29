@@ -2,10 +2,27 @@ import {switchType} from './utils';
 
 export class ArrayBufferBuilder {
   buffer: ArrayBuffer;
+  uint: Uint8Array;
   curPosition = 0;
   view: DataView;
-  constructor(initialBufferSize: number = 50, private sizeIsExact: boolean = false) {
+
+  static caches = new Map<number, {buffer: ArrayBuffer; view: DataView; uint: Uint8Array}>();
+  static biggestCachableBufferSize = 0; //disabled
+
+  constructor(private initialBufferSize: number = 50, private sizeIsExact: boolean = false) {
+    if (sizeIsExact && initialBufferSize <= ArrayBufferBuilder.biggestCachableBufferSize) {
+      if (ArrayBufferBuilder.caches.has(initialBufferSize)) {
+        const cache = ArrayBufferBuilder.caches.get(initialBufferSize);
+        this.buffer = cache.buffer;
+        this.view = cache.view;
+        this.uint = cache.uint;
+        ArrayBufferBuilder.caches.delete(initialBufferSize);
+        return;
+      }
+    }
+
     this.buffer = new ArrayBuffer(initialBufferSize);
+    this.uint = new Uint8Array(this.buffer);
     this.view = new DataView(this.buffer);
   }
 
@@ -71,6 +88,7 @@ export class ArrayBufferBuilder {
   }
 
   addString(str: string) {
+    !this.sizeIsExact && this.testSize(2 + str.length * 2);
     this.addUint16(str.length);
     for (let i = 0, strLen = str.length; i < strLen; i++) {
       this.addUint16(str.charCodeAt(i));
@@ -78,8 +96,9 @@ export class ArrayBufferBuilder {
   }
 
   addArrayBuffer(buff: ArrayBuffer) {
+    !this.sizeIsExact && this.testSize(2 + buff.byteLength);
     this.addUint16(buff.byteLength);
-    new Uint8Array(this.view.buffer).set(new Uint8Array(buff), this.curPosition);
+    this.uint.set(new Uint8Array(buff), this.curPosition);
     this.curPosition += buff.byteLength;
   }
 
@@ -106,7 +125,15 @@ export class ArrayBufferBuilder {
   }
 
   buildBuffer(): ArrayBuffer {
-    return this.buffer.slice(0, this.curPosition);
+    return this.buffer;
+
+    /*
+    if (this.sizeIsExact && this.initialBufferSize > ArrayBufferBuilder.biggestCachableBuffer) {
+      return this.buffer;
+    } else {
+      return this.buffer.slice(0, this.curPosition);
+    }
+*/
   }
 
   testSize(added: number) {
@@ -114,6 +141,26 @@ export class ArrayBufferBuilder {
       this.buffer = transfer(this.buffer, this.buffer.byteLength * 4);
       this.view = new DataView(this.buffer);
     }
+  }
+
+  dispose() {
+    if (this.sizeIsExact && this.initialBufferSize <= ArrayBufferBuilder.biggestCachableBufferSize) {
+      if (!ArrayBufferBuilder.caches.has(this.initialBufferSize)) {
+        const cache = ArrayBufferBuilder.caches.set(this.initialBufferSize, {
+          buffer: this.buffer,
+          view: this.view,
+          uint: this.uint,
+        });
+        /*for (let i = 0; i < this.buffer.byteLength; i + 4) {
+          this.view.setUint32(i, 0);
+        }*/
+        this.buffer = undefined;
+        this.view = undefined;
+        this.uint = undefined;
+        return;
+      }
+    }
+    this.buffer;
   }
 }
 
@@ -211,7 +258,7 @@ export class ArrayBufferReader {
 
   readArrayBuffer() {
     const len = this.readUint16();
-    const buff = this.dv.buffer.slice(this.index, len);
+    const buff = this.dv.buffer.slice(this.index, this.index + len);
     this.index += len;
     return buff;
   }

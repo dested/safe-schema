@@ -29,7 +29,7 @@ function generateAdderFunction<T, TCustom>(
   // language=JavaScript
   code = `
 (buff, value,customSchema)=>{
-${objectMaps.join(';\n')}
+  ${objectMaps.join(';\n')}
 ${code}
 return buff.buildBuffer()
 }`;
@@ -143,7 +143,9 @@ export function generateSchema<T, TCustom = never>(
 function toBuffer<T, TCustom>(value: T, generator: SchemaGenerator<T, TCustom>) {
   const size = generator.adderSizeFunction(value, generator.customSchema);
   const arrayBufferBuilder = new ArrayBufferBuilder(size, true);
-  return generator.adderFunction(arrayBufferBuilder, value, generator.customSchema);
+  const result = generator.adderFunction(arrayBufferBuilder, value, generator.customSchema);
+  arrayBufferBuilder.dispose();
+  return result;
 }
 
 function fromBuffer<T, TCustom>(buffer: ArrayBuffer | ArrayBufferLike, generator: SchemaGenerator<T, TCustom>): T {
@@ -277,7 +279,7 @@ function buildAdderSizeFunction(
 
   switch (schema) {
     case 'arrayBuffer':
-      return `2+${fieldName}.byteLength`;
+      return `2+${fieldName}.byteLength+`;
     case 'uint8':
       return `1+`;
     case 'uint16':
