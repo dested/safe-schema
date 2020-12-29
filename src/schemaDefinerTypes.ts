@@ -63,6 +63,8 @@ export type SafeSchema<T, TCustom extends {}> = [string extends T ? 1 : 0, T ext
   ? SafeSchemaNumberEnum<Cast<T, number>>
   : T extends string | boolean | number
   ? SafeSchemaSimple<T>
+  : T extends ArrayBuffer
+  ? 'arrayBuffer'
   : T extends Array<any>
   ? T[number] extends string | boolean | number
     ? SafeSchemaArray<SafeSchemaSimple<T[number]>>

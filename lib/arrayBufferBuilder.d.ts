@@ -15,6 +15,7 @@ export declare class ArrayBufferBuilder {
     addInt8Optional(value?: number): void;
     addLoop<T>(items: T[], callback: (t: T) => void): void;
     addString(str: string): void;
+    addArrayBuffer(buff: ArrayBuffer): void;
     addSwitch<TType extends string | number, TResult extends number>(n: TType, options: {
         [key in TType]: TResult;
     }): void;
@@ -39,6 +40,7 @@ export declare class ArrayBufferReader {
     readInt32Optional(): number | undefined;
     readInt8(): number;
     readInt8Optional(): number | undefined;
+    readArrayBuffer(): ArrayBuffer;
     readString(): string;
     readUint16(): number;
     readUint32(): number;

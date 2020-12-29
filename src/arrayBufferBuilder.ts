@@ -77,6 +77,12 @@ export class ArrayBufferBuilder {
     }
   }
 
+  addArrayBuffer(buff: ArrayBuffer) {
+    this.addUint16(buff.byteLength);
+    new Uint8Array(this.view.buffer).set(new Uint8Array(buff), this.curPosition);
+    this.curPosition += buff.byteLength;
+  }
+
   addSwitch<TType extends string | number, TResult extends number>(n: TType, options: {[key in TType]: TResult}) {
     this.addUint8(switchType(n, options));
   }
@@ -201,6 +207,13 @@ export class ArrayBufferReader {
       return undefined;
     }
     return result;
+  }
+
+  readArrayBuffer() {
+    const len = this.readUint16();
+    const buff = this.dv.buffer.slice(this.index, len);
+    this.index += len;
+    return buff;
   }
 
   readString() {

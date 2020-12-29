@@ -161,6 +161,8 @@ function buildAdderFunction(
   }
 
   switch (schema) {
+    case 'arrayBuffer':
+      return `buff.addArrayBuffer(${fieldName});\n`;
     case 'uint8':
       return `buff.addUint8(${fieldName});\n`;
     case 'uint16':
@@ -274,6 +276,8 @@ function buildAdderSizeFunction(
   }
 
   switch (schema) {
+    case 'arrayBuffer':
+      return `2+${fieldName}.byteLength`;
     case 'uint8':
       return `1+`;
     case 'uint16':
@@ -370,6 +374,8 @@ function buildReaderFunction(
     return `customSchema['${schema}'].read(reader)`;
   }
   switch (schema) {
+    case 'arrayBuffer':
+      return 'reader.readArrayBuffer()';
     case 'uint8':
       return 'reader.readUint8()';
     case 'uint16':
